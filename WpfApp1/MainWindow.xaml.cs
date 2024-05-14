@@ -32,6 +32,7 @@ namespace WpfApp1
 
         private void btnGenerate_Click(object sender, RoutedEventArgs e)
         {
+            tbLog.Text = string.Empty;
             // Get the number of rows and columns from the sliders
             int numRows = Convert.ToInt32(sliderRows.Value);
             int numColumns = Convert.ToInt32(sliderColumns.Value);
@@ -59,13 +60,17 @@ namespace WpfApp1
             Random random = new Random();
             for (int i = 0; i < ((numColumns + numRows) * 0.5); i++)
             {
+                int num = i + 1;
                 TextBlock txt = new();
-                txt.Text = "✈"+i.ToString();
+                txt.Text = "✈" + num;
+
                 txt.Foreground = new SolidColorBrush(Colors.White);
                 txt.Background = new SolidColorBrush(Colors.Green);
-                txt.Width = 16;
+                txt.Width = 30;
                 txt.Height = 17;
                 txt.Margin = new Thickness(5);
+
+
 
                 int row, column;
                 do
@@ -81,7 +86,7 @@ namespace WpfApp1
                 Grid.SetRow(txt, row);
             }
 
-            for (int i = 0; i <= ((numColumns + numRows) * 0.1); i++)
+            for (int i = 0; i <= ((numColumns + numRows) * 0.3); i++)
             {
                 TextBlock txt = new();
                 txt.Text = "🏢🏢";
@@ -91,10 +96,11 @@ namespace WpfApp1
                 txt.Height = 18;
                 txt.Margin = new Thickness(5);
 
-               
 
-               int row = random.Next(numRows);
-               int column = random.Next(numColumns);
+
+
+                int row = random.Next(numRows);
+                int column = random.Next(numColumns);
 
                 myGrid.Children.Add(txt);
                 Grid.SetColumn(txt, column);
@@ -113,6 +119,7 @@ namespace WpfApp1
             timer.Interval = new TimeSpan(0, 0, 0, 0, 100);
             timer.Start();
         }
+
 
         private void MoveTextBlocks(object sender, EventArgs e)
         {
@@ -168,33 +175,25 @@ namespace WpfApp1
                             {
                                 Grid.SetColumn(txt, newColumn);
                                 Grid.SetRow(txt, newRow);
-                                log.Add($"Moved {txt.Text} from ({row}, {column}) to ({newRow}, {newColumn})");
+
                                 break;
                             }
+
                         }
                     }
 
                     if (isTouchingRed)
                     {
+                        log.Add($"{txt.Text} crashed into a building at ({row}, {column})\n");
                         myGrid.Children.Remove(txt);
-                        for (int j = myGrid.Children.Count - 1; j >= 0; j--)
-                        {
-                            UIElement child = myGrid.Children[j];
-                            TextBlock childTxt = child as TextBlock;
-                            if (childTxt != null && childTxt.Background is SolidColorBrush childBrush && childBrush.Color == Colors.Red && Grid.GetRow(childTxt) == row && Grid.GetColumn(childTxt) == column)
-                            {
-                                myGrid.Children.Remove(child);
-                                log.Add($"Removed {childTxt.Text} at ({row}, {column})");
-                            }
-                        }
                     }
                 }
             }
-
-            // Bind the log List to the ListBox
-            listBoxLog.ItemsSource = log;
+            tbLog.Text += string.Join("\n", log);
         }
     }
+
+
 }
 
 
